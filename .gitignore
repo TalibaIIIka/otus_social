@@ -1,0 +1,8 @@
+.idea/
+*.py[cod]
+*.so
+build/
+dist/
+env/
+venv/
+*.log*
