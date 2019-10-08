@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block title %}{% endblock %}
+{% block content %}
+    <h3>Регистрация</h3>
+    <form action="/user_create" method="post" class="form-registration text-left">
+        <div class="form-row">
+            <div class="form-group col-md-6">
+                <label for="username">Имя пользователя</label>
+                <input type="text" class="form-control" id="username" placeholder="Имя пользователя" required>
+            </div>
+            <div class="form-group col-md-6">
+                <label for="password">Пароль</label>
+                <input type="password" class="form-control" id="password" placeholder="Пароль" required>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group col-md-6">
+                <label for="name">Имя</label>
+                <input type="text" class="form-control" id="name" placeholder="Имя" required>
+            </div>
+            <div class="form-group col-md-6">
+                <label for="surName">Фамилия</label>
+                <input type="text" class="form-control" id="surName" placeholder="Фамилия" required>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="sex">Пол</label>
+            <select class="custom-select" id="sex" required>
+                <option value="" disabled selected>Выберите...</option>
+                <option value="M">Male</option>
+                <option value="F">Female</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="birthDay">Дата рождения</label>
+            <input class="form-control" type="date" id="birthDay">
+        </div>
+        <div class="form-group">
+          <label for="City">Город</label>
+          <input type="text" class="form-control" id="City">
+        </div>
+        <div class="input-group">
+            <div class="input-group-prepend">
+                <span class="input-group-text">Интересы</span>
+            </div>
+            <textarea class="form-control" aria-label="Интересы" id="interests"></textarea>
+        </div>
+        <div class="form-group">
+            <button type="submit" class="btn btn-primary mt-5">Зарегистрироваться</button>
+        </div>
+    </form>
+{% endblock %}

@@ -12,3 +12,8 @@ async def index(request):
     #     posts = await db.get_posts_with_joined_users(conn)
 
     return {}
+
+
+@aiohttp_jinja2.template('registration.html')
+async def registration(request):
+    return {}
