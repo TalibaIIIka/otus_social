@@ -1,5 +1,6 @@
 import asyncio
 import os
+from urllib.parse import urlparse
 
 import aiomysql
 import scrypt
@@ -9,7 +10,16 @@ from Crypto.Random import get_random_bytes
 async def init_mysql(app):
     config = app['config']
     dsn = os.environ.get('DATABASE_URL', '')
-    dsn = dsn or config['mysql']
+    if dsn:
+        dsn_parse = urlparse(dsn)
+        dsn_dict = {
+            'host': dsn_parse.get('hostname'),
+            'port': 80,
+            'user': dsn_parse.get('username'),
+            'password': dsn_parse.get('password'),
+            'db': dsn_parse.get('path').strip('/')
+        }
+    dsn = dsn_dict or config['mysql']
 
     pool: aiomysql.Pool
     pool = await aiomysql.create_pool(**dsn)
