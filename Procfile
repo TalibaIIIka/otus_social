@@ -1,1 +1,1 @@
-web: python app_soc.py
+web: python app_soc
