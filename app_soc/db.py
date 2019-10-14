@@ -13,11 +13,11 @@ async def init_mysql(app):
     if dsn:
         dsn_parse = urlparse(dsn)
         dsn_dict = {
-            'host': dsn_parse.get('hostname'),
+            'host': dsn_parse.hostname,
             'port': 80,
-            'user': dsn_parse.get('username'),
-            'password': dsn_parse.get('password'),
-            'db': dsn_parse.get('path').strip('/')
+            'user': dsn_parse.username,
+            'password': dsn_parse.password,
+            'db': dsn_parse.path.strip('/')
         }
     dsn = dsn_dict or config['mysql']
 
