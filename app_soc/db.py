@@ -10,6 +10,7 @@ from Crypto.Random import get_random_bytes
 async def init_mysql(app):
     config = app['config']
     dsn = os.environ.get('DATABASE_URL', '')
+    dsn_dict = None
     if dsn:
         dsn_parse = urlparse(dsn)
         dsn_dict = {
@@ -35,7 +36,8 @@ async def close_mysql(app):
 
 
 async def init_db(conn: aiomysql.Connection) -> None:
-    with open('./sql/create_tables.sql') as sql_file:
+    from app_soc.settings import BASE_DIR
+    with open(BASE_DIR/'app_soc'/'sql'/'create_tables.sql') as sql_file:
         sql_create_db = sql_file.read()
 
     cur: aiomysql.Cursor
