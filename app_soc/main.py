@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import base64
 import logging
+import os
 import sys
 
 import aiohttp_jinja2
@@ -48,7 +49,7 @@ def main(argv):
     web.run_app(
         app,
         host=config['host'],
-        port=config['port']
+        port=os.environ.get('PORT') or config['port']
     )
 
 
