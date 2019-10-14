@@ -2,17 +2,57 @@
 
 {% block title %}{% endblock %}
 {% block content %}
-    <h3>Авторизуйтесь</h3>
-    <form class="form-signin">
-        <div class="form-group">
-            <input type="text" class="form-control" id="username" placeholder="Введите логин">
-        </div>
-        <div class="form-group">
-            <input type="password" class="form-control" id="password" placeholder="Пароль">
-        </div>
-        <div class="form-group">
-            <button type="submit" formaction="/auth"  class="btn btn-primary">Войти</button>
-            <button type="submit" formaction="/registration" class="btn btn-danger">Зарегистрироваться</button>
-        </div>
-    </form>
+    <h3>Добро пожаловать</h3>
+    <table class="table-info">
+        <tbody>
+            <tr class="table-light">
+                <th class="table-light">
+                    Имя:
+                </th>
+                <td>
+                    {{ name }}
+                </td>
+            </tr>
+            <tr class="table-light">
+                <th class="table-light">
+                    Фамилия:
+                </th>
+                <td>
+                    {{ surname }}
+                </td>
+            </tr>
+            <tr class="table-light">
+                <th class="table-light">
+                    Пол:
+                </th>
+                <td>
+                    {{ "Мужской" if sex == "M" else "Женский" }}
+                </td>
+            </tr>
+            <tr class="table-light">
+                <th class="table-light">
+                    Дата рождения:
+                </th>
+                <td>
+                    {{ birthday }}
+                </td>
+            </tr>
+            <tr class="table-light">
+                <th class="table-light">
+                    Город:
+                </th>
+                <td>
+                    {{ city }}
+                </td>
+            </tr>
+            <tr class="table-light">
+                <th class="table-light">
+                    Интересы:
+                </th>
+                <td>
+                    {{ interests }}
+                </td>
+            </tr>
+        </tbody>
+    </table>
 {% endblock %}

@@ -15,3 +15,8 @@
 .mt-5, .my-5 {
     margin-top: 3rem!important;
 }
+
+.table-info {
+    text-align: left;
+    min-width: 20em;
+}

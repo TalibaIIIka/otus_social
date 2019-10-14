@@ -7,7 +7,7 @@ SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,N
 -- -----------------------------------------------------
 -- Schema social
 -- -----------------------------------------------------
-DROP SCHEMA IF EXISTS `social` ;
+-- DROP SCHEMA IF EXISTS `social` ;
 
 -- -----------------------------------------------------
 -- Schema social
@@ -18,12 +18,12 @@ USE `social` ;
 -- -----------------------------------------------------
 -- Table `social`.`accounts`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `social`.`accounts` ;
+-- DROP TABLE IF EXISTS `social`.`accounts` ;
 
 CREATE TABLE IF NOT EXISTS `social`.`accounts` (
-  `id_account` CHAR(16) NOT NULL,
-  `salt` CHAR(16) NOT NULL,
-  `password_hash` VARCHAR(255) NOT NULL,
+  `id_account` BIGINT(20) unsigned NOT NULL AUTO_INCREMENT,
+  `salt` CHAR(32) NOT NULL,
+  `password_hash` CHAR(128) NOT NULL,
   `username` VARCHAR(64) NOT NULL,
   PRIMARY KEY (`id_account`),
   UNIQUE INDEX `login_UNIQUE` (`username` ASC))
@@ -33,10 +33,10 @@ ENGINE = InnoDB;
 -- -----------------------------------------------------
 -- Table `social`.`users`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `social`.`users` ;
+-- DROP TABLE IF EXISTS `social`.`users` ;
 
 CREATE TABLE IF NOT EXISTS `social`.`users` (
-  `id_account` CHAR(16) NOT NULL,
+  `id_account` BIGINT(20) unsigned NOT NULL,
   `name` VARCHAR(64) NULL,
   `surname` VARCHAR(64) NULL,
   `patronymic` VARCHAR(64) NULL,
