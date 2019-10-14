@@ -14,7 +14,7 @@ async def init_mysql(app):
         dsn_parse = urlparse(dsn)
         dsn_dict = {
             'host': dsn_parse.hostname,
-            'port': 80,
+            'port': 3306,
             'user': dsn_parse.username,
             'password': dsn_parse.password,
             'db': dsn_parse.path.strip('/')
