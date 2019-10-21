@@ -2,7 +2,7 @@ import pathlib
 
 from aiohttp import web
 
-from app_soc.views import index, SignIn, Login
+from app_soc.views import index, Login, SignIn, SearchEngine
 
 
 def setup_routes(app: web.Application):
@@ -11,4 +11,4 @@ def setup_routes(app: web.Application):
     app.router.add_get('/', index, name='main')
     app.router.add_view('/login', Login, name='login')
     app.router.add_view('/registration', SignIn, name='registration')
-
+    app.router.add_view('/find', SearchEngine, name='find')

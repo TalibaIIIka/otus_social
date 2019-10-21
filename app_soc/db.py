@@ -1,5 +1,6 @@
 import asyncio
 import os
+from string import Template
 from urllib.parse import urlparse
 
 import aiomysql
@@ -50,8 +51,6 @@ class ErrorUserAlreadyExist(Exception):
 
 
 class User:
-    lock_user_create = asyncio.Lock()
-
     def __init__(self, pool: aiomysql.Pool, person):
         self.db_pool = pool
         self.id_account = person.get('id_account')
@@ -76,32 +75,29 @@ class User:
                 return count != 0
 
     async def create_user(self):
-        async with self.lock_user_create:
-            if await self.is_user_exist():
-                raise ErrorUserAlreadyExist
-
-            salt = get_random_bytes(16)
-            password_hash = scrypt.hash(self.password, salt)
-            sql_create_account = f"""
-                INSERT INTO accounts (username, salt, password_hash) 
-                    VALUES ('{self.username}', '{salt.hex()}', '{password_hash.hex()}');
-            """
-            conn: aiomysql.Connection
-            cur: aiomysql.Cursor
-            async with self.db_pool.acquire() as conn:
-                async with conn.cursor() as cur:
-                    await cur.execute(sql_create_account)
-                    await cur.execute('SELECT LAST_INSERT_ID();')
-                    (account_id,) = await cur.fetchone()
-                    sql_create_user = f"""
-                        INSERT INTO users (id_account, name, surname, birthday, 
-                                               sex, interests, city)
-                            VALUES ('{account_id}', '{self.name}', '{self.surname}', '{self.birthday}', 
-                            '{self.sex}', '{self.interests}', '{self.city}');
-                    """
-                    await cur.execute(sql_create_user)
-                    await conn.commit()
-                    return account_id
+        if await self.is_user_exist():
+            raise ErrorUserAlreadyExist
+        salt = get_random_bytes(16)
+        password_hash = scrypt.hash(self.password, salt)
+        sql_create_account = f"""
+            INSERT INTO accounts (username, salt, password_hash) 
+                VALUES ('{self.username}', '{salt.hex()}', '{password_hash.hex()}');
+        """
+        conn: aiomysql.Connection
+        cur: aiomysql.Cursor
+        async with self.db_pool.acquire() as conn:
+            async with conn.cursor() as cur:
+                await cur.execute(sql_create_account)
+                account_id = cur.lastrowid
+                sql_create_user = f"""
+                    INSERT INTO users (id_account, name, surname, birthday, 
+                                           sex, interests, city)
+                        VALUES ('{account_id}', '{self.name}', '{self.surname}', '{self.birthday}', 
+                        '{self.sex}', '{self.interests}', '{self.city}');
+                """
+                await cur.execute(sql_create_user)
+                await conn.commit()
+                return account_id
 
     async def check_user(self):
         select_user = f"""
@@ -140,3 +136,36 @@ class User:
                 await cur.execute(select_info)
 
                 return await cur.fetchone()
+
+    async def find_user_by_name_surname(self):
+        t = Template("""
+            SELECT id_account as id, name, surname, birthday, sex, interests, city
+                FROM users
+                WHERE name like '$name%' and surname like '$surname%' ORDER BY id;
+        """)
+        sql_find = t.substitute(name=self.name, surname=self.surname)
+        async with self.db_pool.acquire() as conn:
+            async with conn.cursor(aiomysql.DictCursor) as cur:
+                await cur.execute(sql_find)
+                return await cur.fetchall()
+
+    async def create_user_alter(self, account_id, conn):
+        salt = 'c7569ba8f3b6adcfa9fc52eb8f285157'
+        password_hash = '1c742a8f6824fbb145405e322f3183cb17f15ee59be00c2fa72a14b5369dffde9415a83b849af6370e7a7c5ab2f21a84e53ebfc66daae76ff24ff6782b4dadba'
+        sql_create_account = f"""
+            INSERT INTO accounts (id_account, username, salt, password_hash) 
+                VALUES ('{account_id}', '{self.username}', '{salt}', '{password_hash}');
+        """
+        sql_create_user = f"""
+                        INSERT INTO users (id_account, name, surname, birthday, 
+                                               sex, interests, city)
+                            VALUES ('{account_id}', '{self.name}', '{self.surname}', '{self.birthday}', 
+                            '{self.sex}', '{self.interests}', '{self.city}');
+                    """
+        conn: aiomysql.Connection
+        cur: aiomysql.Cursor
+
+        async with conn.cursor() as cur:
+            await cur.execute(sql_create_account)
+
+            await cur.execute(sql_create_user)

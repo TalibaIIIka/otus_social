@@ -87,3 +87,25 @@ class Login(web.View):
             return web.HTTPFound(location=url)
         except Exception:
             logging.exception('Cannot login')
+
+
+class SearchEngine(web.View):
+    @aiohttp_jinja2.template('find_user.html')
+    async def get(self):
+        return {}
+
+    @aiohttp_jinja2.template('find_user.html')
+    async def post(self):
+        person_form_data = await self.request.post()
+        person_data = defaultdict(str)
+        person_data.update(person_form_data)
+        try:
+            user = User(self.request.app['db_pool'], person_data)
+            find_users = await user.find_user_by_name_surname()
+            return {
+                'users': find_users,
+                'name': person_data['name'],
+                'surname': person_data['surname']
+            }
+        except Exception:
+            logging.exception('Cannot find')

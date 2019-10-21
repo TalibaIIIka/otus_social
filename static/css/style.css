@@ -16,7 +16,7 @@
     margin-top: 3rem!important;
 }
 
-.table-info {
+.table-info, .td {
     text-align: left;
     min-width: 20em;
 }

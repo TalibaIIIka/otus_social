@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+
+{% block title %}{% endblock %}
+{% block content %}
+    <h3>Поиск анкет</h3>
+    <form method="post" class="form-signin">
+        <div class="form-group">
+            <input type="text" value="{{ name }}" class="form-control form-control {{ user_valid }}" id="name" name="name" placeholder="Введите имя">
+            <div class="invalid-feedback">
+                    Пользователь не найден.
+            </div>
+        </div>
+        <div class="form-group">
+            <input type="text" value="{{ surname }}" class="form-control" id="surname" name="surname" placeholder="Введите фамилию">
+        </div>
+        <div class="form-group">
+            <button type="submit" formaction="/find"  class="btn btn-primary">Найти</button>
+        </div>
+    </form>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>
+                    #
+                </th>
+                <th>
+                    Имя
+                </th>
+                <th>
+                    Фамилия
+                </th>
+                <th>
+                    Дата рождения
+                </th>
+                <th>
+                    Пол
+                </th>
+                <th>
+                    Город
+                </th>
+                <th>
+                    Интересы
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for user in users %}
+            <tr>
+                <td>
+                    {{ user.id }}
+                </td>
+                <td>
+                    {{ user.name }}
+                </td>
+                <td>
+                    {{ user.surname }}
+                </td>
+                <td>
+                    {{ user.birthday }}
+                </td>
+                <td>
+                    {{ "Мужской" if user.sex == "M" else "Женский" }}
+                </td>
+                <td>
+                    {{ user.city }}
+                </td>
+                <td>
+                    {{ user.interests }}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}
