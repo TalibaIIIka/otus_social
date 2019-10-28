@@ -7,6 +7,7 @@ import sys
 import aiohttp_jinja2
 import aiohttp_session
 import jinja2
+import uvloop
 from aiohttp import web
 from aiohttp_session.cookie_storage import EncryptedCookieStorage
 from cryptography import fernet
@@ -46,6 +47,7 @@ def main(argv):
     app = init_app(argv)
 
     config = get_config(argv)
+    uvloop.install()
     web.run_app(
         app,
         host=config['host'],

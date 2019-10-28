@@ -1,7 +1,9 @@
-import aiohttp_jinja2
+import asyncio
 import logging
-from aiohttp import web
 from collections import defaultdict
+
+import aiohttp_jinja2
+from aiohttp import web
 
 import aiohttp_session
 
@@ -101,11 +103,12 @@ class SearchEngine(web.View):
         person_data.update(person_form_data)
         try:
             user = User(self.request.app['db_pool'], person_data)
-            find_users = await user.find_user_by_name_surname()
+            find_users = await user.find_user_by_name_surname(prefix=person_data['prefix_name'])
             return {
                 'users': find_users,
-                'name': person_data['name'],
-                'surname': person_data['surname']
+                'name': person_data['prefix_name'],
             }
+        except asyncio.CancelledError:
+            logging.warning('web-handlers was cancelled on client disconnection')
         except Exception:
             logging.exception('Cannot find')

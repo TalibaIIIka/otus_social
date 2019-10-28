@@ -13,7 +13,7 @@ DSN = {
     'host': 'us-cdbr-iron-east-05.cleardb.net',
     'port': 3306,
     'user': 'b079c24dda06b6',
-    'password': '3bee48d3',
+    'password': '30817953412ce1c',
     'db': 'heroku_fd253ea686e5ee8'
 }
 
@@ -24,8 +24,21 @@ DSN_HYPER = {
     'password': 'social',
     'db': 'social',
     'minsize': 1,
-    'maxsize': 15,
+    'maxsize': 5,
     'connect_timeout': 3,
+    'no_delay': False,
+    'autocommit': False
+}
+
+DSN_AWS = {
+    'host': 'ec2-18-222-39-34.us-east-2.compute.amazonaws.com',
+    'port': 3306,
+    'user': 'user',
+    'password': 'social',
+    'db': 'social',
+    'minsize': 1,
+    'maxsize': 10,
+    'connect_timeout': 5,
     'no_delay': False,
     'autocommit': False
 }
@@ -75,7 +88,7 @@ async def generate_fake_accounts(pool: aiomysql.pool):
     try:
         loop = asyncio.get_event_loop()
         async with pool.acquire() as conn:
-            for i in range(500_000):
+            for i in range(100_000):
                 person = user_generate_fake()     #await loop.run_in_executor(None, user_generate_fake)
                 fake_user = User(conn, person)
                 account_id = COUNTER
@@ -93,9 +106,9 @@ async def generate_fake_accounts(pool: aiomysql.pool):
 
 
 async def main():
-    pool = await aiomysql.create_pool(**DSN_HYPER)
+    pool = await aiomysql.create_pool(**DSN_AWS)
     tasks = []
-    for _ in range(2):
+    for _ in range(10):
         tasks.append(generate_fake_accounts(pool))
     await asyncio.gather(*tasks)
 

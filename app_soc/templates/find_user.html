@@ -5,13 +5,10 @@
     <h3>Поиск анкет</h3>
     <form method="post" class="form-signin">
         <div class="form-group">
-            <input type="text" value="{{ name }}" class="form-control form-control {{ user_valid }}" id="name" name="name" placeholder="Введите имя">
+            <input type="text" value="{{ name }}" class="form-control form-control {{ user_valid }}" id="name" name="prefix_name" placeholder="Введите имя">
             <div class="invalid-feedback">
                     Пользователь не найден.
             </div>
-        </div>
-        <div class="form-group">
-            <input type="text" value="{{ surname }}" class="form-control" id="surname" name="surname" placeholder="Введите фамилию">
         </div>
         <div class="form-group">
             <button type="submit" formaction="/find"  class="btn btn-primary">Найти</button>

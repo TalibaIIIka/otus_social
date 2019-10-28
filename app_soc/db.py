@@ -137,13 +137,13 @@ class User:
 
                 return await cur.fetchone()
 
-    async def find_user_by_name_surname(self):
+    async def find_user_by_name_surname(self, prefix=''):
         t = Template("""
             SELECT id_account as id, name, surname, birthday, sex, interests, city
                 FROM users
-                WHERE name like '$name%' and surname like '$surname%' ORDER BY id;
+                WHERE name like '$prefix%' and surname like '$prefix%' ORDER BY id;
         """)
-        sql_find = t.substitute(name=self.name, surname=self.surname)
+        sql_find = t.substitute(prefix=prefix)
         async with self.db_pool.acquire() as conn:
             async with conn.cursor(aiomysql.DictCursor) as cur:
                 await cur.execute(sql_find)
