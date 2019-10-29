@@ -137,11 +137,14 @@ class User:
 
                 return await cur.fetchone()
 
-    async def find_user_by_name_surname(self, prefix=''):
+    async def find_user_by_name_surname(self, prefix=None):
+        if not prefix:
+            return []
+
         t = Template("""
             SELECT id_account as id, name, surname, birthday, sex, interests, city
                 FROM users
-                WHERE name like '$prefix%' and surname like '$prefix%' ORDER BY id;
+                WHERE name like '$prefix%' OR surname like '$prefix%' ORDER BY id;
         """)
         sql_find = t.substitute(prefix=prefix)
         async with self.db_pool.acquire() as conn:
