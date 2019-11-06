@@ -7,7 +7,6 @@ import sys
 import aiohttp_jinja2
 import aiohttp_session
 import jinja2
-import uvloop
 from aiohttp import web
 from aiohttp_session.cookie_storage import EncryptedCookieStorage
 from cryptography import fernet
@@ -33,7 +32,7 @@ def init_app(argv=None):
         loader=jinja2.PackageLoader('app_soc', 'templates')
     )
 
-    fernet_key = fernet.Fernet.generate_key()
+    fernet_key = b'mZ90VQjOCjWAnDmAfb8jPoPe_DehGlcOYXrpDtMOI20=' #fernet.Fernet.generate_key()
     secret_key = base64.urlsafe_b64decode(fernet_key)
     aiohttp_session.setup(app, EncryptedCookieStorage(secret_key))
     return app
@@ -42,17 +41,24 @@ def init_app(argv=None):
 def main(argv):
     logging.basicConfig(
         filename=BASE_DIR/'log'/'social_demo.log',
-        level=logging.DEBUG
+        level=logging.INFO
     )
     app = init_app(argv)
 
     config = get_config(argv)
-    uvloop.install()
-    web.run_app(
-        app,
-        host=config['host'],
-        port=os.environ.get('PORT') or config['port']
-    )
+
+    #uvloop.install()
+    if config['path']:
+        web.run_app(
+            app,
+            path=config['path']
+        )
+    else:
+        web.run_app(
+            app,
+            host=config['host'],
+            port=os.environ.get('PORT') or config['port']
+        )
 
 
 if __name__ == '__main__':

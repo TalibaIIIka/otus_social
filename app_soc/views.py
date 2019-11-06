@@ -1,6 +1,7 @@
 import asyncio
 import logging
 from collections import defaultdict
+from random import choice
 
 import aiohttp_jinja2
 from aiohttp import web
@@ -20,7 +21,7 @@ async def index(request: web.Request):
 
     person_data = defaultdict(str)
     person_data.update({'id_account': user_id})
-    user = User(request.app['db_pool'], person_data)
+    user = User(choice(request.app['db_pool_slave']), person_data)
     return await user.get_info()
 
 
@@ -73,7 +74,7 @@ class Login(web.View):
         person_data.update(person_form_data)
 
         try:
-            user = User(self.request.app['db_pool'], person_data)
+            user = User(choice(self.request.app['db_pool_slave']), person_data)
             if not await user.check_user():
                 person_data.update({'user_valid': 'is-invalid'})
                 return person_data
@@ -102,7 +103,7 @@ class SearchEngine(web.View):
         person_data = defaultdict(str)
         person_data.update(person_form_data)
         try:
-            user = User(self.request.app['db_pool'], person_data)
+            user = User(choice(self.request.app['db_pool_slave']), person_data)
             find_users = await user.find_user_by_name_surname(prefix=person_data['prefix_name'])
             return {
                 'users': find_users,

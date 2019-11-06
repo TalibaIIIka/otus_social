@@ -1,11 +1,20 @@
 mysql:
-  host: 172.31.38.2
-  port: 33066
-  user: user
-  password: social
-  db: social
-  minsize: 1
-  maxsize: 10
+  master:
+    host: 172.31.10.115
+    port: 33066
+    user: user
+    password: social
+    db: social
+    minsize: 10
+    maxsize: 200
+  slaves:
+    - host: 172.31.25.191
+      port: 33066
+      user: user
+      password: social
+      db: social
+      minsize: 10
+      maxsize: 200
 
 host: 0.0.0.0
 port: 8080

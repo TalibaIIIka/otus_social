@@ -1,5 +1,7 @@
 import asyncio
 import os
+from concurrent.futures import ProcessPoolExecutor
+from functools import partial
 from string import Template
 from urllib.parse import urlparse
 
@@ -21,19 +23,27 @@ async def init_mysql(app):
             'password': dsn_parse.password,
             'db': dsn_parse.path.strip('/')
         }
-    dsn = dsn_dict or config['mysql']
 
+    dsn_master = config['mysql']['master']
     pool: aiomysql.Pool
-    pool = await aiomysql.create_pool(**dsn)
-    app['db_pool'] = pool
-
+    
+    pool = await aiomysql.create_pool(**dsn_master)
     async with pool.acquire() as conn:
         await init_db(conn)
+
+    dsn_slaves = config['mysql'].get('slaves') or [dsn_master]
+    app['db_pool_slave'] = []
+    for slave in dsn_slaves:
+        pool = await aiomysql.create_pool(**slave)
+        app['db_pool_slave'].append(pool)
 
 
 async def close_mysql(app):
     app['db_pool'].close()
     await app['db_pool'].wait_closed()
+    for pool in app['db_pool_slave']:
+        pool.close()
+        await pool.wait_closed()
 
 
 async def init_db(conn: aiomysql.Connection) -> None:
@@ -122,7 +132,12 @@ class User:
             async with conn.cursor() as cur:
                 await cur.execute(select_salt_hash)
                 (salt, password_hash, id_account) = await cur.fetchone()
-        if scrypt.hash(self.password, bytes.fromhex(salt)).hex() == password_hash:
+
+        with ProcessPoolExecutor(max_workers=1) as pool:
+            loop = asyncio.get_event_loop()
+            scrypt_hash = partial(scrypt.hash, self.password, bytes.fromhex(salt))
+            current_hash = await loop.run_in_executor(pool, scrypt_hash)
+        if current_hash.hex() == password_hash:
             return id_account
         return None
 
@@ -144,7 +159,7 @@ class User:
         t = Template("""
             SELECT id_account as id, name, surname, birthday, sex, interests, city
                 FROM users
-                WHERE name like '$prefix%' OR surname like '$prefix%' ORDER BY id;
+                WHERE name like '$prefix%' OR surname like '$prefix%' ORDER BY id LIMIT 50;
         """)
         sql_find = t.substitute(prefix=prefix)
         async with self.db_pool.acquire() as conn:

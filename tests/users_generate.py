@@ -5,6 +5,7 @@ from collections import defaultdict
 
 import aiomysql
 from faker import Faker
+from mimesis import Person
 
 from app_soc.db import User
 
@@ -31,8 +32,8 @@ DSN_HYPER = {
 }
 
 DSN_AWS = {
-    'host': 'ec2-18-222-39-34.us-east-2.compute.amazonaws.com',
-    'port': 3306,
+    'host': '172.31.10.115',
+    'port': 33066,
     'user': 'user',
     'password': 'social',
     'db': 'social',
@@ -44,7 +45,7 @@ DSN_AWS = {
 }
 
 fake = Faker('ru_RU')
-
+person_mimesis = Person('ru')
 
 def user_generate_fake():
     person = defaultdict(str)
@@ -62,7 +63,8 @@ def user_generate_fake():
     else:
         person['surname'] = fake.last_name_female()
     person['sex'] = sex
-    person['username'] = fake.user_name()
+
+    person['username'] = person_mimesis.username('l.l_UU_d')
     person['password'] = '1111'
 
     person['birthday'] = fake.date()
@@ -88,7 +90,8 @@ async def generate_fake_accounts(pool: aiomysql.pool):
     try:
         loop = asyncio.get_event_loop()
         async with pool.acquire() as conn:
-            for i in range(100_000):
+            for i in range(1_000_000):
+
                 person = user_generate_fake()     #await loop.run_in_executor(None, user_generate_fake)
                 fake_user = User(conn, person)
                 account_id = COUNTER
@@ -108,7 +111,7 @@ async def generate_fake_accounts(pool: aiomysql.pool):
 async def main():
     pool = await aiomysql.create_pool(**DSN_AWS)
     tasks = []
-    for _ in range(10):
+    for _ in range(1):
         tasks.append(generate_fake_accounts(pool))
     await asyncio.gather(*tasks)
 
