@@ -8,7 +8,7 @@ async-timeout==3.0.1
 attrs==19.2.0
 cffi==1.12.3
 chardet==3.0.4
-cryptography==2.7
+cryptography==3.2
 Faker==2.0.3
 idna==2.8
 Jinja2==2.10.3
