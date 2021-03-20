@@ -11,7 +11,7 @@ chardet==3.0.4
 cryptography==2.7
 Faker==2.0.3
 idna==2.8
-Jinja2==2.10.3
+Jinja2==2.11.3
 MarkupSafe==1.1.1
 mimesis==3.3.0
 multidict==4.5.2
